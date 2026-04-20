@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a4e8a">
+    <title>ENKOMOS-Water | Structured Water Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0a4e8a 0%, #1a6ea8 100%);
+            color: #f0f0e0;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 0.7em;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+            font-size: 0.7em;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .sync-dot.online { background: #2ecc71; box-shadow: 0 0 4px #2ecc71; }
+        .sync-dot.offline { background: #e74c3c; }
+
+        .tier-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 40px;
+        }
+
+        .tier-btn {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 30px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+
+        .tier-btn.active {
+            background: #ffd700;
+            color: #0a4e8a;
+            font-weight: bold;
+        }
+
+        .stats-bar {
+            background: rgba(0,0,0,0.4);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-export {
+            background: #3498db;
+            border: none;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: #f0f0e0;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background: rgba(255,215,0,0.3);
+            border-bottom: 2px solid #ffd700;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75em;
+            margin-bottom: 6px;
+            opacity: 0.8;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #f0f0e0;
+            font-size: 1em;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .section-title {
+            font-size: 0.85em;
+            font-weight: bold;
+            margin: 16px 0 10px 0;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8em;
+            font-weight: normal;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #ffd700;
+            border: none;
+            color: #0a4e8a;
+            padding: 14px;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: bold;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        .btn-submit:active { transform: scale(0.98); }
+
+        .history-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7em;
+            opacity: 0.7;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .history-data {
+            font-size: 0.8em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .history-data span {
+            background: rgba(0,0,0,0.3);
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.5;
+            font-size: 0.85em;
+        }
+
+        .encrypted-badge {
+            background: #8e44ad;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.6em;
+            margin-left: 8px;
+        }
+
+        .pending-badge {
+            background: #ff6600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.6em;
+            opacity: 0.5;
+            margin-top: 20px;
+        }
+
+        .structured-badge {
+            background: #2ecc71;
+            color: #0a4e8a;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💧 ENKOMOS-Water</h1>
+            <p class="subtitle">Structured Water Intelligence | Offline | Encrypted</p>
+            <div class="sync-status" id="syncStatus">
+                <span class="sync-dot offline"></span>
+                <span id="syncText">Offline</span>
+            </div>
+        </div>
+
+        <!-- Tier Selector -->
+        <div class="tier-selector">
+            <button class="tier-btn active" data-tier="A">🏠 Tier A<br><small>Home (<0.5ha)</small></button>
+            <button class="tier-btn" data-tier="B">🤝 Tier B<br><small>Co-op (0.5-2ha)</small></button>
+            <button class="tier-btn" data-tier="C">🏭 Tier C<br><small>Corporate (2+ha)</small></button>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">📦 <span id="pendingCount">0</span> pending</div>
+            <div class="stat">✅ <span id="syncedCount">0</span> synced</div>
+            <button id="exportBtn" class="btn-export">📤 Export Data</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="entry">📝 New Reading</button>
+            <button class="tab" data-tab="history">📋 History</button>
+            <button class="tab" data-tab="advice">💡 Advice</button>
+            <button class="tab" data-tab="structured">🌀 Structured Water</button>
+        </div>
+
+        <!-- Tab 1: New Reading -->
+        <div class="tab-content active" id="tab-entry">
+            <form id="dataForm">
+                <div class="form-group">
+                    <label>📍 Location / Pond / Tank Name *</label>
+                    <input type="text" id="location" placeholder="e.g., Main Pond - Tilapia" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>💧 Water Source</label>
+                        <select id="water_source">
+                            <option value="well">Well / Groundwater</option>
+                            <option value="municipal">Municipal / Tap</option>
+                            <option value="rain">Rainwater Harvested</option>
+                            <option value="river">River / Canal</option>
+                            <option value="pond">Pond / Reservoir</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>🌀 Structured Method</label>
+                        <select id="structured_method">
+                            <option value="none">None</option>
+                            <option value="magnetic">Magnetic Coil</option>
+                            <option value="vortex">Vortex Chamber</option>
+                            <option value="electric">Electric Induction</option>
+                            <option value="hybrid">Hybrid (2+ methods)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">🧪 Water Quality Parameters</div>
+                <div class="form-row">
+                    <div class="form-group"><label>pH</label><input type="number" id="ph" step="0.1" placeholder="6.5-8.5"></div>
+                    <div class="form-group"><label>ORP (mV)</label><input type="number" id="orp" placeholder="200-400"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Dissolved Oxygen (ppm)</label><input type="number" id="do" step="0.1" placeholder=">4 ppm"></div>
+                    <div class="form-group"><label>Temperature (°C)</label><input type="number" id="temp" step="0.1" placeholder="e.g., 26"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>TDS (ppm)</label><input type="number" id="tds" placeholder="Total Dissolved Solids"></div>
+                    <div class="form-group"><label>EC (µS/cm)</label><input type="number" id="ec" placeholder="Electrical Conductivity"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Ammonia (ppm)</label><input type="number" id="ammonia" step="0.1" placeholder="<0.5 for fish"></div>
+                    <div class="form-group"><label>Nitrite (ppm)</label><input type="number" id="nitrite" step="0.1" placeholder="<1.0"></div>
+                </div>
+
+                <div class="section-title">🐟 Fish / Aquatic Life (if applicable)</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Species</label>
+                        <select id="fish_species">
+                            <option value="none">None</option>
+                            <option value="tilapia">Tilapia</option>
+                            <option value="prawn">Prawn / Shrimp</option>
+                            <option value="carp">Local Carp</option>
+                            <option value="clams">Clams</option>
+                            <option value="octopus">Octopus</option>
+                            <option value="mixed">Mixed Species</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Health Status</label>
+                        <select id="fish_health">
+                            <option value="excellent">Excellent (Active, feeding well)</option>
+                            <option value="good">Good (Normal behavior)</option>
+                            <option value="fair">Fair (Lethargic, reduced feeding)</option>
+                            <option value="poor">Poor (Visible disease, deaths)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">🌊 Water Movement & Aeration</div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="aerator"> Aerator running</label>
+                    <label><input type="checkbox" id="water_circulation"> Water circulation pump</label>
+                    <label><input type="checkbox" id="air_stone"> Air stone / diffuser</label>
+                    <label><input type="checkbox" id="fountain"> Fountain / waterfall</label>
+                </div>
+
+                <div class="section-title">📝 Notes</div>
+                <div class="form-group">
+                    <textarea id="notes" rows="2" placeholder="Observed issues, recent changes, etc."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">💾 Save Reading (Encrypted)</button>
+            </form>
+        </div>
+
+        <!-- Tab 2: History -->
+        <div class="tab-content" id="tab-history">
+            <div id="historyList" class="history-list">
+                <div class="empty-state">No readings yet. Add your first water quality reading.</div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Advice -->
+        <div class="tab-content" id="tab-advice">
+            <div id="adviceList" class="history-list">
+                <div class="empty-state">Save readings to get AI advice on water quality.</div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Structured Water Guide -->
+        <div class="tab-content" id="tab-structured">
+            <div id="structuredGuide" class="history-list">
+                <div class="empty-state">Loading structured water guide...</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            🔒 Encrypted offline storage | Data stays on your device | Export for ENKOMOS Main
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
